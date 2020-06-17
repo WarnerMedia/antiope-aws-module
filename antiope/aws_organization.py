@@ -50,11 +50,11 @@ class AWSOrganizationMaster(AWSAccount):
         """
         org_client = self.get_client('organizations')
 
-        if not has_attr(self, "org_enabled_service_principals"):
+        if not hasattr(self, "org_enabled_service_principals"):
             self.get_delegated_admin_status()
 
         if "amazonaws.com" not in service:
-            service += "amazonaws.com"
+            service += ".amazonaws.com"
 
         if service not in self.org_enabled_service_principals:
             logger.error(f"Service {service} is not enabled for this organization.")
