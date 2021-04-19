@@ -119,7 +119,7 @@ class AWSAccount(object):
     #
     # VPC Methods
     #
-    def get_regions(self, service=None):
+    def get_regions(self, service=None, exclude=None):
         """Return an array of the regions this account is active in. Ordered with us-east-1 in the front."""
         ec2 = self.get_client('ec2')
         response = ec2.describe_regions()
@@ -129,7 +129,13 @@ class AWSAccount(object):
                 continue
             output.append(r['RegionName'])
         if service is not None:
-           output = list( set( output ) & set( boto3.session.Session().get_available_regions('inspector') ))
+            output = list( set( output ) & set( boto3.session.Session().get_available_regions('inspector') ))
+        if exclude is not None:
+            if exclude is list:
+                output = list( set( regions ) - set( exclude ) )
+            else:
+                output = list( set( regions ) - set( [ exclude ] ) )
+
         return(output)
 
     def get_vpc_ids(self):
