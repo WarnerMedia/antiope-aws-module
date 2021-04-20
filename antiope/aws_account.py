@@ -119,7 +119,7 @@ class AWSAccount(object):
     #
     # VPC Methods
     #
-    def get_regions(self):
+    def get_regions(self, service=None, exclude=None):
         """Return an array of the regions this account is active in. Ordered with us-east-1 in the front."""
         ec2 = self.get_client('ec2')
         response = ec2.describe_regions()
@@ -128,6 +128,14 @@ class AWSAccount(object):
             if r['RegionName'] == "us-east-1":
                 continue
             output.append(r['RegionName'])
+        if service is not None:
+            output = list( set( output ) & set( boto3.session.Session().get_available_regions(service) ))
+        if exclude is not None:
+            if type( exclude ) is list:
+                output = list( set( output ) - set( exclude ) )
+            else:
+                output = list( set( output ) - set( [ exclude ] ) )
+
         return(output)
 
     def get_vpc_ids(self):
@@ -307,6 +315,3 @@ class AWSAccount(object):
             raise AccountLookupError("Failed to get {} from {} in account table: {}".format(key, self, e))
         except KeyError as e:
             raise AccountLookupError("Failed to get {} from {} in account table: {}".format(key, self, e))
-
-
-
