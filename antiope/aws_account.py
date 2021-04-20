@@ -129,12 +129,12 @@ class AWSAccount(object):
                 continue
             output.append(r['RegionName'])
         if service is not None:
-            output = list( set( output ) & set( boto3.session.Session().get_available_regions('inspector') ))
+            output = list( set( output ) & set( boto3.session.Session().get_available_regions(service) ))
         if exclude is not None:
-            if exclude is list:
-                output = list( set( regions ) - set( exclude ) )
+            if type( exclude ) is list:
+                output = list( set( output ) - set( exclude ) )
             else:
-                output = list( set( regions ) - set( [ exclude ] ) )
+                output = list( set( output ) - set( [ exclude ] ) )
 
         return(output)
 
